@@ -20,19 +20,10 @@ app = FastAPI()
 
 
 #Función del incio
+
 @app.get("/")
 def read_root():
-    welcome_message = """
-¡Bienvenidos al Sistema de Recomendación de Juegos de Steam!
-
-Vas a poder recibir recomendaciones con base en tus juegos favoritos. Además, podrás realizar otro tipo de consultas que te ayudarán a elegir mejor tu próximo juego.
-
-¡Explora nuestro sistema y descubre los juegos que te encantarán!
-
---> Agregar '/docs' al final de la URL para poder comenzar :)
-
-Autor: Maximiliano Lucchesi - Data Scientist Jr @ Steam
-"""
+    welcome_message =  '¡Bienvenidos al Sistema de Recomendación de Juegos de Steam! Vas a poder recibir recomendaciones con base en tus juegos favoritos. Además, podrás realizar otro tipo de consultas que te ayudarán a elegir mejor tu próximo juego. ¡Explora nuestro sistema y descubre los juegos que te encantarán! --> Agregar /docs al final de la URL para poder comenzar :) Autor: Maximiliano Lucchesi - Data Scientist Jr @ Steam'
     return welcome_message
 
 
@@ -40,30 +31,11 @@ Autor: Maximiliano Lucchesi - Data Scientist Jr @ Steam
 # Función UsersWorstDeveloper
 
 @app.get("/worst_developers/{year}")
-def get_worst_developers(year: int):
-    """
-    Endpoint para obtener el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para un año dado.
-
-    :param year: Año para el cual se quiere obtener el top 3 de desarrolladoras con juegos menos recomendados.
-    :type year: int
-    :return: Lista de diccionarios con el top 3 de desarrolladoras.
-    :rtype: list[dict]
-    """
-    return UsersWorstDeveloper(year)
-
 def UsersWorstDeveloper(year: int):
-    """
-    Devuelve el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para el año dado.
-
-    :param year: Año para el cual se quiere obtener el top 3 de desarrolladoras con juegos menos recomendados.
-    :type year: int
-    :return: Lista de diccionarios con el top 3 de desarrolladoras.
-    :rtype: list[dict]
-    """
 
     # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    path_to_parquet = os.path.join(current_directory, 'data', 'developer_negative_review.parquet')
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'developer_negative_review.parquet')
     developer_negative_review = pq.read_table(path_to_parquet).to_pandas()
 
     # Filtra el dataframe para el año dado y sentiment_analysis es 0
@@ -84,7 +56,6 @@ def UsersWorstDeveloper(year: int):
 
 
 
-
 # Función sentiment_analysis
 
 @app.get("/sentiment-analysis/{dev}")
@@ -92,7 +63,7 @@ def sentiment_analysis(dev: str):
 
     # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    path_to_parquet = os.path.join(current_directory, 'data', 'id_dev_sentiment.parquet')
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'id_dev_sentiment.parquet')
     id_dev_sentiment = pq.read_table(path_to_parquet).to_pandas()
     
 
@@ -114,8 +85,6 @@ def sentiment_analysis(dev: str):
 
 
 
-
-
 # Modelo de Recomendación de juegos, ingresando su id
 
 @app.get("/recomendacion_juego/{id_juego}")
@@ -123,7 +92,7 @@ def recomenacion_juego(id_juego: int):
 
     # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    path_to_parquet = os.path.join(current_directory, 'data', 'df_games_filtered.parquet')
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'df_games_filtered.parquet')
     df_games_filtered = pq.read_table(path_to_parquet).to_pandas()
     df = df_games_filtered
 
