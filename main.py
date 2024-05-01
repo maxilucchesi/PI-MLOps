@@ -14,6 +14,8 @@ from sklearn.metrics.pairwise import linear_kernel
 import dask.dataframe as dd
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+import dask.dataframe as dd
+
 
 app = FastAPI()
 
