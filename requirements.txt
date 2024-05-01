@@ -71,3 +71,4 @@ uvicorn==0.29.0
 virtualenv==20.24.2
 virtualenv-clone==0.5.7
 wcwidth==0.2.6
+dask==2024.4.2
