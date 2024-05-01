@@ -22,7 +22,17 @@ app = FastAPI()
 #Función del incio
 @app.get("/")
 def read_root():
-    welcome_message = 'Proyecto Individual - MLOps - maxilucchesi'
+    welcome_message = """
+¡Bienvenidos al Sistema de Recomendación de Juegos de Steam!
+
+Vas a poder recibir recomendaciones con base en tus juegos favoritos. Además, podrás realizar otro tipo de consultas que te ayudarán a elegir mejor tu próximo juego.
+
+¡Explora nuestro sistema y descubre los juegos que te encantarán!
+
+--> Agregar '/docs' al final de la URL para poder comenzar :)
+
+Autor: Maximiliano Lucchesi - Data Scientist Jr @ Steam
+"""
     return welcome_message
 
 
