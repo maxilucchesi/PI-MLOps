@@ -18,11 +18,26 @@ from sklearn.neighbors import KNeighborsClassifier
 
 app = FastAPI()
 
+
+#Función del incio
 @app.get("/")
 def read_root():
     welcome_message = 'Proyecto Individual - MLOps - maxilucchesi'
     return welcome_message
 
+@app.get("/worst_developers/{year}")
+def get_worst_developers(year: int):
+    """
+    Endpoint para obtener el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para un año dado.
+
+    :param year: Año para el cual se quiere obtener el top 3 de desarrolladoras con juegos menos recomendados.
+    :type year: int
+    :return: Lista de diccionarios con el top 3 de desarrolladoras.
+    :rtype: list[dict]
+    """
+    return UsersWorstDeveloper(year)
+
+# Función UsersWorstDeveloper
 def UsersWorstDeveloper(year: int):
     """
     Devuelve el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para el año dado.
@@ -33,14 +48,12 @@ def UsersWorstDeveloper(year: int):
     :rtype: list[dict]
     """
 
-    # Obtener el directorio actual del archivo y construir la ruta al archivo parquet
+    # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
     path_to_parquet = os.path.join(current_directory, 'data', 'developer_negative_review.parquet')
-
-    # Leer el archivo parquet como DataFrame de pandas
     developer_negative_review = pq.read_table(path_to_parquet).to_pandas()
 
-    # Filtrar el DataFrame por año y por comentarios negativos, que son aquellos que tienen valor 0 en 'sentiment_analysis'
+    # Filtra el dataframe para el año dado y sentiment_analysis es 0
     df_filtered = developer_negative_review[(developer_negative_review['year_review'] == year) &
                                             (developer_negative_review['sentiment_analysis'] == 0)]
 
@@ -48,10 +61,10 @@ def UsersWorstDeveloper(year: int):
     if df_filtered.empty:
         return None
 
-    # Agrupar por desarrolladora y sumar las recomendaciones negativas, luego obtener las 3 desarrolladoras con más recomendaciones negativas
+    # Agrupa por desarrollador y cuenta la cantidad de juegos recomendados
     peores_devs = df_filtered.groupby('developer')['recommend'].sum().nlargest(3)
 
-    # Crear la lista de diccionarios con el top 3 de desarrolladoras
+    # Construye el resultado como una lista de diccionarios
     result = [{"Top 3{}".format(i + 1): developer} for i, (developer, _) in enumerate(peores_devs.items())]
 
     return result
