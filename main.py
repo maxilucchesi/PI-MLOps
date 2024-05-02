@@ -91,7 +91,6 @@ def recomendacion_juego(id: int):
     current_directory = os.path.dirname(os.path.abspath(__file__))
     path_to_parquet = os.path.join(current_directory, 'archivos', 'df_games_filtered.parquet')
     df_games_filtered = pq.read_table(path_to_parquet).to_pandas()
-    df = df_games_filtered
 
     vectorizador = TfidfVectorizer(stop_words='english')
     df_games_filtered['tags_concat'] = df_games_filtered['tags_concat'].fillna('')
