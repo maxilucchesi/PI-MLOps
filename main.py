@@ -85,29 +85,20 @@ def sentiment_analysis(dev: str):
 
 # Modelo de Recomendación de juegos, ingresando su id
 
-# Lee el archivo parquet y obtiene la ruta del directorio actual del script
-current_directory = os.path.dirname(os.path.abspath(__file__))
-path_to_parquet = os.path.join(current_directory, 'archivos', 'df_games_filtered.parquet')
-df_games_filtered = pq.read_table(path_to_parquet).to_pandas()
-df = df_games_filtered
-
-# Se instancia un objeto vectorizador usando TfidfVectorizer, con stop words en inglés.
-vectorizador = TfidfVectorizer(stop_words='english')
-
-# Los valores nulos en la columna 'tags_concat' se reemplazan con una cadena vacía.
-df_games_filtered['tags_concat'] = df_games_filtered['tags_concat'].fillna('')
-
-# Se realiza la transformación TF-IDF en los datos de la columna 'tags_concat'.
-vector_matrix = vectorizador.fit_transform(df_games_filtered['tags_concat'])
-
-# Se calcula la similitud del coseno
-simil_coseno = linear_kernel(vector_matrix, vector_matrix)
-
-# Se crea una serie de indices
-index = pd.Series(df_games_filtered.index, index=df_games_filtered['id']).drop_duplicates()
-
-@app.get("/recomendacion_juego/{id_juego}")
+@app.get("/recomendacion_juego/{id}")
 def recomendacion_juego(id: int):
+
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'df_games_filtered.parquet')
+    df_games_filtered = pq.read_table(path_to_parquet).to_pandas()
+    df = df_games_filtered
+
+    vectorizador = TfidfVectorizer(stop_words='english')
+    df_games_filtered['tags_concat'] = df_games_filtered['tags_concat'].fillna('')
+    vector_matrix = vectorizador.fit_transform(df_games_filtered['tags_concat'])
+    simil_coseno = linear_kernel(vector_matrix, vector_matrix)
+    index = pd.Series(df_games_filtered.index, index=df_games_filtered['id']).drop_duplicates()
+
     try:
         # Buscar el nombre del juego correspondiente al ID
         nombre_juego = df_games_filtered.loc[df_games_filtered['id'] == id, 'app_name'].iloc[0]
