@@ -30,27 +30,27 @@ def read_root():
 
 # Función UsersWorstDeveloper
 
-@app.get("/worst_developers/{year}")
-def UsersWorstDeveloper(year: int):
+@app.get("/UsersNotRecommend/{year}")
+def UsersNotRecommend(year: int):
 
     # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    path_to_parquet = os.path.join(current_directory, 'archivos', 'developer_negative_review.parquet')
-    developer_negative_review = pq.read_table(path_to_parquet).to_pandas()
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'game_negative_review.parquet')
+    game_negative_review = pq.read_table(path_to_parquet).to_pandas()
 
     # Filtra el dataframe para el año dado y sentiment_analysis es 0
-    df_filtered = developer_negative_review[(developer_negative_review['year_review'] == year) &
-                                            (developer_negative_review['sentiment_analysis'] == 0)]
+    df_filtered = game_negative_review[(game_negative_review['year_review'] == year) &
+                                            (game_negative_review['sentiment_analysis'] == 0)]
 
     # Si no hay datos filtrados, retornar None
     if df_filtered.empty:
         return None
 
-    # Agrupa por desarrollador y cuenta la cantidad de juegos recomendados
-    peores_devs = df_filtered.groupby('developer')['recommend'].sum().nlargest(3)
+    # Agrupa por juego y cuenta la cantidad de juegos recomendados
+    peores_games = df_filtered.groupby('app_name')['recommend'].sum().nlargest(3)
 
     # Construye el resultado como una lista de diccionarios
-    result = [{"Top 3{}".format(i + 1): developer} for i, (developer, _) in enumerate(peores_devs.items())]
+    result = [{"Top {}".format(i + 1): app_name} for i, (app_name, _) in enumerate(peores_games.items())]
 
     return result
 
@@ -58,26 +58,26 @@ def UsersWorstDeveloper(year: int):
 
 # Función sentiment_analysis
 
-@app.get("/sentiment-analysis/{dev}")
-def sentiment_analysis(dev: str):
+@app.get("/sentiment-analysis/{year}")
+def sentiment_analysis(year: int):
 
     # Lee el archivo parquet y obtiene la ruta del directorio actual del script
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    path_to_parquet = os.path.join(current_directory, 'archivos', 'id_dev_sentiment.parquet')
-    id_dev_sentiment = pq.read_table(path_to_parquet).to_pandas()
+    path_to_parquet = os.path.join(current_directory, 'archivos', 'year_sentiment.parquet')
+    year_sentiment = pq.read_table(path_to_parquet).to_pandas()
     
 
     # Filtra el dataframe para el desarrollador dado
-    df_filtered = id_dev_sentiment[id_dev_sentiment['developer'] == dev]
+    df_filtered = year_sentiment[year_sentiment['year_developed'] == year]
 
     if df_filtered.empty:
-        raise HTTPException(status_code=404, detail=f"No se encontraron registros para el desarrollador {dev}")
+        raise HTTPException(status_code=404, detail=f"No se encontraron registros para el desarrollador {year}")
 
     # Agrupa por análisis de sentimiento y cuenta la cantidad de registros
     analysis_counts = df_filtered.groupby('sentiment_analysis').size().to_dict()
 
     # Construye el resultado como un diccionario con una lista
-    result = {dev: [f'Negative = {analysis_counts.get(0, 0)}', f'Positive = {analysis_counts.get(2, 0)}']}
+    result = [f'Negative = {analysis_counts.get(0, 0)}', f'Positive = {analysis_counts.get(2, 0)}']
 
     return result
 
