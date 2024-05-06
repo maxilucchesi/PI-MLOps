@@ -68,8 +68,8 @@ Fue necesario crear una cuenta y configurar el entorno virtual en Render para po
 
 Mediante [este link](https://pi-mlops-maxilucchesi.onrender.com), se puede acceder a la API, y con [este otro](https://pi-mlops-maxilucchesi.onrender.com/docs#/) ir directamente al entorno para realizar las consultas con los endpoints. Las cuales son las siguientes:
 
-- `UsersWorstDeveloper(year: int)`: Devuelve el top 3 de desarrolladoras con juegos MENOS recomendados por usuarios para el año dado. (reviews.recommend = False y comentarios negativos)
-- `sentiment_analysis(empresa_desarrolladora: str)`: Según la empresa desarrolladora, se devuelve un diccionario con el nombre de la desarrolladora como llave y una lista con la cantidad total de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento como valor.
+- `UsersNotRecommend(year: int)`: Devuelve el top 3 de juegos MENOS recomendados por usuarios para el año dado. (reviews.recommend = False y comentarios negativos)
+- `sentiment_analysis(empresa_desarrolladora: str)`: Según el año de lanzamiento, se devuelve una lista con la cantidad de registros de reseñas de usuarios que se encuentren categorizados con un análisis de sentimiento.
 
 La conexión con la API fue mediante el archivo '`main.py`' de este repositorio.
 
